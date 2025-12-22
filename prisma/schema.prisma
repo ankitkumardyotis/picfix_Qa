@@ -1,0 +1,313 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Plan {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @unique @db.ObjectId
+  userName        String?
+  emailId         String?
+  planName        String
+  creditPoints    Int
+  remainingPoints Int
+  createdAt       DateTime
+  expiredAt       DateTime?
+}
+
+model PaymentHistory {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  transactionId         String   @unique
+  orderId               String
+  userId                String   @db.ObjectId
+  userName              String
+  emailId               String
+  contact               String
+  planName              String
+  creditPoints          Int
+  createdAt             DateTime
+  amount                Int
+  currency              String
+  paymentStatus         String
+}
+
+model History {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String    @db.ObjectId
+  replicateId       String?   // Make optional since we'll generate images directly
+  model             String
+  status            String
+  cost              String?                                                           
+  // Image storage fields
+  outputImagePath   String?   // R2 path for generated image
+  inputImagePaths   Json?     // Array of input image paths
+  publicUrl         String?   // Public URL for the generated image
+  
+  // Enhanced metadata
+  prompt            String?
+  modelParams       Json?
+  aspectRatio       String?
+  
+  // Location tracking fields
+  userIP            String?   // User's IP address
+  country           String?   // Country name
+  region            String?   // Region/State name
+  city              String?   // City name
+  timezone          String?   // Timezone
+  latitude          Float?    // Latitude coordinate
+  longitude         Float?    // Longitude coordinate
+  countryCode       String?   // ISO country code
+  
+  // Status tracking
+  isPublished       Boolean   @default(false)
+  publishedImageId  String?   @db.ObjectId // Reference to PublishedImage if published
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publishedImage    PublishedImage? @relation(fields: [publishedImageId], references: [id])
+  
+  @@index([userId, createdAt])
+  @@index([model, userId])
+  @@index([status])
+}
+
+model User {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  image           String?
+  email           String           @unique
+  role            String           @default("user") // "user", "admin", or "super_admin"
+  createdAt       DateTime         @default(now())
+  emailVerified   DateTime?        @map("verifiedAt")
+  sessions        Session[]
+  Account         Account[]
+  publishedImages PublishedImage[]
+  imageLikes      ImageLike[]
+  history         History[]
+  dailyUsage      DailyUsage[]
+  videoJobs       VideoJob[]
+
+  @@map("users")
+}
+
+model WebhookEvent {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  replicateId String
+  created_at  DateTime
+  model       String
+  output      Json
+  status      String
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime @map("expiresAt")
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime @map("expiresAt")
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model CustomJWT {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String
+  jwtRefreshToken String
+}
+
+model Project {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String    @db.ObjectId
+  name                String
+  description         String?
+  audioLanguage       String    @default("english")
+  voiceType          String    @default("male")
+  pointersCount      Int       @default(5)
+  article            String
+  backgroundMusicId   String?
+  backgroundMusicName String?
+  backgroundMusicUrl  String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model PublishedImage {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String    @db.ObjectId
+  userName          String?
+  userEmail         String?
+  
+  // Store R2 paths/keys only (NOT URLs)
+  outputImagePath   String    // e.g., "community/hair-style/1703123456-output.jpg"
+  inputImagePaths   Json      // Array of input image path objects
+  
+  // Metadata
+  title             String?
+  prompt            String?
+  model             String
+  modelParams       Json?
+  aspectRatio       String?
+  
+  // Publishing info
+  isPublic          Boolean   @default(true)
+  isApproved        Boolean   @default(true)
+  
+  // Stats
+  likes             Int       @default(0)
+  downloads         Int       @default(0)
+  views             Int       @default(0)
+  
+  // Reference to original history record
+  historyId         String?   @db.ObjectId // Reference to History record
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageLikes        ImageLike[]
+  history           History[]
+  
+  @@index([model, isApproved, isPublic])
+  @@index([createdAt])
+  @@index([likes])
+  @@index([historyId])
+}
+
+model ImageLike {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String         @db.ObjectId
+  publishedImageId  String?        @db.ObjectId // Optional for example images
+  exampleImageId    String?        // For example images (model + image path)
+  createdAt         DateTime       @default(now())
+  
+  // Relations
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publishedImage    PublishedImage? @relation(fields: [publishedImageId], references: [id], onDelete: Cascade)
+  
+  // Ensure one like per user per image
+  @@unique([userId, publishedImageId])
+  @@index([publishedImageId])
+  @@index([exampleImageId])
+  @@index([userId])
+}
+
+model ExampleImageStats {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  imageId        String    @unique // model + image path combination
+  model          String
+  imagePath      String
+  likes          Int       @default(0)
+  downloads      Int       @default(0)
+  views          Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([model])
+  @@index([likes])
+}
+
+model DailyUsage {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  email           String
+  usageCount      Int       @default(0)
+  dailyLimit      Int       @default(5) // Default 5 credits per day
+  resetAt         DateTime  // Next reset time (midnight UTC)
+  lastUsed        DateTime? // Last usage timestamp
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resetAt])
+  @@index([userId])
+  @@index([resetAt])
+}
+
+model VideoJob {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String    @db.ObjectId
+  replicateId       String    @unique // Replicate prediction ID
+  
+  // Job configuration
+  model             String    // e.g., 'kling-v2.5-turbo-pro'
+  prompt            String
+  duration          Int       // Duration in seconds
+  aspectRatio       String
+  startImage        String?   // Input image URL/path
+  
+  // Job state management
+  status            String    // 'running', 'succeeded', 'failed'
+  
+  // Output storage
+  replicateOutput   String?   // Temporary Replicate output URL
+  videoPath         String?   // Permanent R2 storage path
+  publicUrl         String?   // Public URL for the video
+  
+  // Error handling
+  errorMessage      String?
+  
+  // Credit management
+  creditsDeducted   Int       @default(10)
+  creditsRefunded   Int       @default(0)
+  
+  // Webhook tracking
+  webhookReceived   Boolean   @default(false)
+  webhookProcessed  Boolean   @default(false)
+  
+  // Location tracking
+  userIP            String?
+  country           String?
+  region            String?
+  city              String?
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  completedAt       DateTime?
+  
+  // Relations
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, createdAt])
+  @@index([status])
+}

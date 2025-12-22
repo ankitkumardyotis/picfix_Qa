@@ -1,0 +1,325 @@
+/* Main container */
+.creditCardPlan {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  padding: 80px 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background decorations */
+.creditCardPlan::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.creditCardPlan::after {
+  content: '';
+  position: absolute;
+  bottom: 10%;
+  right: 10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(76, 205, 196, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+}
+
+/* Title section */
+.cardTitle {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.mainTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.accentText {
+  color: #4ecdc4;
+}
+
+.subtitle {
+  font-size: 1.2rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  line-height: 1.6 !important;
+  font-family: 'Inter', sans-serif !important;
+  padding: 0rem 1rem !important;
+}
+
+/* Cards container */
+.cardContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Individual card */
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(76, 205, 196, 0.1);
+  /* display: flex; */
+  /* flex-direction: column; */
+  height: 105%;
+  animation: slideUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Popular card highlighting */
+.popularCard {
+  background: linear-gradient(135deg, #1a0d31 0%, #351c1f 50%, #412817 100%);
+  color: black;
+  transform: scale(1.05);
+  border: none;
+  position: relative;
+}
+
+.popularCard::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  /* background: linear-gradient(135deg, #1a0d31, #351c1f, #412817); */
+  border-radius: 22px;
+  z-index: -1;
+}
+
+.popularCard:hover {
+  transform: scale(1.05) translateY(-5px);
+}
+
+.popularCard .planBadge {
+  background: rgba(153, 0, 0,.3) !important;
+  color: white !important;
+}
+
+.popularCard .priceSection {
+  color: white;
+}
+
+.popularCard .planDescription {
+  color: white;
+}
+
+.popularCard .featureItem {
+  color: white;
+}
+
+/* Plan badge */
+.planBadge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  width: fit-content;
+}
+
+/* Price section */
+.priceSection {
+  display: flex;
+  align-items: baseline;
+  color: #1f2937;
+}
+
+.currency {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.price {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Plan description */
+.planDescription {
+  color: #6b7280;
+  font-size: .9rem;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  flex-grow: 1;
+}
+
+/* Features list */
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px 0;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  color: #374151;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.checkIcon {
+  width: 20px;
+  height: 20px;
+  color: #4ecdc4;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+/* CTA Button */
+.ctaButton {
+  /* background: linear-gradient(45deg, #667eea 30%, #764ba2 90%); */
+  background: linear-gradient(135deg,rgb(251,1,118) 0%, #d76d77 50%, #fbc901 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 18px;
+  position: absolute;
+  bottom: 20px;
+  /* left: 20px; */
+  /* right: 20px; */
+  /* margin-top: 50px; */
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 80%;
+  /* margin-top: auto; */
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.ctaButton:hover {
+  background: linear-gradient(135deg, #2d0e5e 0%, #b94e5e 50%, #e68a4a 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+}
+
+.popularCard .ctaButton {
+  /* background:  linear-gradient(135deg, #2d0e5e 0%, #b94e5e 50%, #e68a4a 100%); */
+  background: linear-gradient(135deg,rgb(251,1,118) 0%, #d76d77 50%, #fbc901 100%);
+  /* border: 1px solid #e68a4a; */
+  /* border: 3px solid  linear-gradient(135deg, #2d0e5e 0%, #b94e5e 50%, #e68a4a 100%); */
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+}
+
+.popularCard .ctaButton:hover {
+  /* background:  linear-gradient(135deg, #2d0e5e 0%, #b94e5e 50%, #e68a4a 100%); */
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .creditCardPlan {
+    padding: 60px 15px;
+    gap: 40px;
+  }
+
+  .mainTitle {
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem !important;
+  }
+
+  .cardContainer {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .card {
+    padding: 30px 25px;
+  }
+
+  .popularCard {
+    transform: none;
+  }
+
+  .popularCard:hover {
+    transform: translateY(-5px);
+  }
+
+  .price {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .creditCardPlan {
+    padding: 40px 10px;
+  }
+
+  .mainTitle {
+    font-size: 2rem;
+  }
+
+  .card {
+    padding: 25px 20px;
+  }
+
+  .price {
+    font-size: 2.5rem;
+  }
+}
