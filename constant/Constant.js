@@ -109,6 +109,3 @@ const priceStructure = [
 
 
 export { priceStructure }
-
-
-

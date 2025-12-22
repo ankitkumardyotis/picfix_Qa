@@ -27,11 +27,12 @@ export default async function handler(req, res) {
         const currentDate = new Date();
         // add payment to database 
         const latestPayment = order.items[order.items.length - 1]; // ✅ get latest (last) payment
-
+        console.log( "order-------------------", order);
+        console.log( "latestPayment-------------------", latestPayment);
         const [planDetails] = priceStructure.filter(
             (item) => item.currency === latestPayment.currency && item.price == (latestPayment.amount / 100)
         );
-
+        console.log( "planDetails-------------------", planDetails);
         await prisma.PaymentHistory.create({
             data: {
                 transactionId: razorpay_payment_id,
@@ -87,7 +88,7 @@ export default async function handler(req, res) {
 
         // Add Payment Details to Database after succefull Payment 
         res.redirect(302,
-            `${process.env.NEXTAUTH_URL}/paymentSuccess?transactionId=${order.items[0].id}&amount=${order.items[0].amount}&paymentMethod=${order.items[0].method}&currency=${order.items[0].currency}&status=${'success'}&email=${order.items[0].email}`
+            `${process.env.NEXTAUTH_URL}/paymentSuccess?transactionId=${latestPayment.id}&amount=${latestPayment.amount}&paymentMethod=${latestPayment.method}&currency=${latestPayment.currency}&status=${'success'}&email=${latestPayment.email}`
         );
 
     } else {

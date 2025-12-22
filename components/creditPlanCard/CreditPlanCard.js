@@ -41,7 +41,7 @@ function CreditPlanCard() {
         const { order } = await response.json();
 
         const options = {
-          key: process.env.RAZORPAY_TEST_KEY_ID,
+          key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_KEY_ID,
           amount: order.amount,
           name: 'PicFix.ai',
           currency: order.currency,
