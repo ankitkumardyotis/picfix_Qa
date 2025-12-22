@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     const options = {
         amount: amount.toString() * 100,
-        currency: "USD",
+        currency: "INR",
         receipt: uuid(),
     };
     const order = await instance.orders.create(options);
